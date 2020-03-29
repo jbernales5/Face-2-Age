@@ -18,6 +18,7 @@ front-end/speed-measure-plugin*.json
 back-end/.idea
 back-end/.project
 back-end/.classpath
+back-end/venv/
 front-end/.c9/
 front-end/*.launch
 front-end/.settings/
