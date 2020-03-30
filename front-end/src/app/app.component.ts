@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { faBrain } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +11,7 @@ export class AppComponent {
   title = 'age-guess';
 
   files: File[] = [];
+  faBrain = faBrain;
 
   onSelect(event) {
     console.log(event);

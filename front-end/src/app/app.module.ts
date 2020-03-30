@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { NgxDropzoneModule } from 'ngx-dropzone';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgxDropzoneModule
+    NgxDropzoneModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]
