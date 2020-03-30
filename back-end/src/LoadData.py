@@ -5,9 +5,9 @@ Functions to load data image
 import cv2
 import numpy as np
 import glob
-import matplotlib.pyplot as plt
 
-def loadImage(path) :
+
+def loadImage(path):
     """
     Return numpyArray in RGB - shape (200,200,3)
     :param path:
@@ -16,6 +16,7 @@ def loadImage(path) :
     img = cv2.imread(path)
     return img
 
+
 def fromDirectory(pathFolder):
     """
     List all files from a folder
@@ -23,13 +24,14 @@ def fromDirectory(pathFolder):
     :return: numpy list of numpy Images
     """
     imgList = []
-    imgList = glob.glob(pathFolder+'/*')
+    imgList = glob.glob(pathFolder + '/*')
 
     npImg = []
     for imgPath in imgList:
         npImg.append(loadImage(imgPath))
 
     return np.asarray(npImg)
+
 
 def makeDataSet(path):
     """
@@ -50,7 +52,7 @@ def makeDataSet(path):
     for i, folder in enumerate(folderList):
         X = fromDirectory(folder)
         imgX.append(X)
-        imgY.append(np.asarray([i for _ in range(1,X.shape[0])]))
+        imgY.append(np.asarray([i for _ in range(1, X.shape[0])]))
 
     imgX = np.asarray(imgX)
     imgY = np.asarray(imgY)
@@ -61,40 +63,11 @@ def makeDataSet(path):
 
     return imgX, imgY
 
-def getAnalytics(data):
-    """
-    general purpose analytics
-    :param data:
-    :return:
-    """
-
-    # number img per age
-    numElements = []
-    for d in data:
-        numElements.append(d.shape[0])
-
-    plt.bar(range(1, len(numElements) + 1), numElements)
-    plt.title('Number img per age')
-    plt.show()
-
-    return
-
-def groupByAge(imgX, imgY):
-    """
-    Group some range of age a cause the fault of certain images
-    :param imgX:
-    :param imgY:
-    :return:
-    """
-    # TODO groupByAge
-    pass
-
 
 if __name__ == "__main__":
     DATASET_PATH = '../DataSet/face_age'
 
     imgX, imgY = makeDataSet(DATASET_PATH)
-    getAnalytics(imgX)
+    # getAnalytics(imgX)
 
     print('done')
-
