@@ -9,12 +9,36 @@
   <div class="col-md-12">
     <h2 class="text-center custom">Click or drag and drop your picture! </h2>
   </div>
-    <ngx-dropzone (change)="onSelect($event)">
+    <ngx-dropzone (change)="onSelect($event)" [multiple]="false" [expandable]="true" class="custom">
       <ngx-dropzone-label>Drop it, baby!</ngx-dropzone-label>
       <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
           <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
       </ngx-dropzone-preview>
-    </ngx-dropzone>  
+    </ngx-dropzone>
+    <div class="row custom" *ngIf="this.files.length != 0 && this.files.length < 2">
+      <div class="col-md-12">
+        <button type="button" class="btn btn-outline-primary btn-block">Upload</button>
+      </div>
+    </div>
+    <div class="row custom" *ngIf="this.files.length > 1">
+      <div class="col-md-12">
+        <button type="button" class="btn btn-outline-primary btn-block" disabled>Too many files!</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 custom">
+        <p class="text-center"><i><u>Privacy policy:</u> We do not store or keep your photos in any way after returning your age to you!</i></p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <p class="text-left custom"><b>Made with patience on Angular and AWS</b> © Manuel Cubillo | Jonathan Bernales</p>
+      </div>
+      <div class="col-md-4">
+        <footer class="text-right custom"><a href="https://google.com">View source code</a></footer>
+      </div>
+    </div>
+  
 </div>
 
 <router-outlet></router-outlet>
