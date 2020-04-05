@@ -52,7 +52,7 @@ def makeDataSet(path):
     for i, folder in enumerate(folderList):
         X = fromDirectory(folder)
         imgX.append(X)
-        imgY.append(np.asarray([i for _ in range(1, X.shape[0])]))
+        imgY.append(np.asarray([i for _ in range(0, X.shape[0])]))
 
     imgX = np.asarray(imgX)
     imgY = np.asarray(imgY)

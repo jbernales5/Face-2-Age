@@ -4,6 +4,8 @@ Custom Analytics functions
 
 import matplotlib.pyplot as plt
 
+from Preprocessing import getNumberOfPeopleRange
+
 
 def getImgPerAgeBar(data, showGraphics=True):
     """
@@ -23,6 +25,20 @@ def getImgPerAgeBar(data, showGraphics=True):
 
     return numElements
 
+def peopleGrouped(imgX):
+
+    ageGroup = getImgPerAgeBar(imgX)
+    countAux = []
+    rangeAge = 5
+    for i in range(1, 90, rangeAge):
+        peopleInRange = getNumberOfPeopleRange(ageGroup, i, i + rangeAge)
+        print("Personas entre ", i, ' - ', i + rangeAge, ':', peopleInRange)
+        countAux.append(peopleInRange)
+
+    # plot
+    plt.bar(range(1, len(countAux) + 1), countAux)
+    plt.title('Graphic Age group by')
+    plt.show()
 
 if __name__ == "__main__":
     print('done')
