@@ -9,10 +9,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import glob
 import os
+import sys
 from Balancer import balancer_Data
 from Project import Project
 from logger import logging
-
 
 
 def getNumberOfPeopleRange(data, min, max):
@@ -70,6 +70,7 @@ def random_jitter(img):
 
     return img
 
+
 def get_label_from_path(filename):
     """
     return a int  with the correspond number of the folder
@@ -88,6 +89,7 @@ def get_label_from_path(filename):
 def get_label_from_Balanced_data(files, folder_name, img_name):
     return files[folder_name][img_name]
 
+
 def load_image(filename, augment=True):
     """
     load image from a file, and preprocess the img [resize - ranfom_jitter - normalize]
@@ -95,7 +97,6 @@ def load_image(filename, augment=True):
     :param augment:
     :return:
     """
-    tf.print(filename)
     img = tf.cast(tf.image.decode_png(tf.io.read_file(filename)), tf.float32)[..., :3]
     img = resize(img, Project.IMG_HEIGHT, Project.IMG_WIDTH)
 
@@ -107,12 +108,13 @@ def load_image(filename, augment=True):
     return img
 
 
-def load_train_image(filename):
-    return load_image(filename, True)
+def load_train_image(filename, age):
+    return load_image(filename, True), one_hot_tag(age)
 
 
-def load_test_image(filename):
-    return load_image(filename, False)
+def load_test_image(filename, age):
+    return load_image(filename, False), one_hot_tag(age)
+
 
 def split_data(img_paths, percentage):
     """
@@ -131,17 +133,46 @@ def split_data(img_paths, percentage):
 
     return train_imgs, test_imgs
 
+
 def load_label_img(data_paths, files):
     """
     Recive the image paths of the train/test and return the right tag for the img (np.array)
     :param data_paths:
     :return: np.array
     """
-
     infoFile = [get_label_from_path(filename) for filename in data_paths]
-    label_img = [get_label_from_Balanced_data(files, folder_name, img_name) for folder_name, img_name, label in infoFile]
+    label_img = [get_label_from_Balanced_data(files, folder_name, img_name) for folder_name, img_name, label in
+                 infoFile]
+    # replace age by the index in rules list, to later be processed to onehot
+    new_labels = [replace_age_by_index(int(label)) for label in label_img]
 
-    return np.asarray(label_img)
+    return np.asarray(new_labels)
+
+
+def replace_age_by_index(age):
+    """
+    return the index where the age is on the list
+    :param age:
+    :return:
+    """
+    rules = Project.RULES_BALANCER
+    count = 0
+    for range, tag in rules:
+        if tag == age:
+            return count
+        count = count + 1
+
+    return 0  # if ins't  found 0...
+
+
+def one_hot_tag(tag):
+    """
+    process in a map function one_hot of the index given
+    :param tag:
+    :return:
+    """
+    return tf.one_hot(tag, Project.NUM_CLASSES)
+
 
 def load_and_preprocessing():
     """
@@ -152,14 +183,14 @@ def load_and_preprocessing():
     imgs_paths_DATASET = glob.glob(Project.DATASET_PATH + '/*/*')
     imgs_paths_DATASET.sort()
 
-    if not imgs_paths_DATASET: # check if is empty
+    if not imgs_paths_DATASET:  # check if is empty
         logging.error('--- IMAGES NOT FOUND ---')
 
-    logging.debug('Spligin data ' + str(Project.SPLIT_PERCENTAGE*100) + ' %')
+    logging.debug('Spligin data ' + str(Project.SPLIT_PERCENTAGE * 100) + ' %')
     train_img_paths, test_img_paths = split_data(imgs_paths_DATASET, Project.SPLIT_PERCENTAGE)
 
     logging.debug('Balancing tags')
-    files = balancer_Data() # load a balanced set of tags with the correspond img path
+    files = balancer_Data()  # load a balanced set of tags with the correspond img path
 
     # load tags for each image
     train_img_Y = load_label_img(train_img_paths, files)
@@ -167,28 +198,34 @@ def load_and_preprocessing():
 
     logging.debug('Making tensorflow dataset')
     # train
-    x_train = tf.data.Dataset.from_tensor_slices(train_img_paths)
-    y_train = tf.data.Dataset.from_tensor_slices(train_img_Y)
+    x_train = tf.data.Dataset.from_tensor_slices((train_img_paths, train_img_Y))
+   # y_train = tf.data.Dataset.from_tensor_slices(train_img_Y)
 
     # test
-    x_test = tf.data.Dataset.from_tensor_slices(test_img_paths)
-    y_test = tf.data.Dataset.from_tensor_slices(test_img_Y)
+    x_test = tf.data.Dataset.from_tensor_slices((test_img_paths, test_img_Y))
+    #y_test = tf.data.Dataset.from_tensor_slices(test_img_Y)
 
     logging.debug('Preprocessing and Augmentation data..')
     # preprocessing IMG
     x_train = x_train.map(load_train_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-    x_train = x_train.batch(Project.BATCH_SIZE)    
+    x_train = x_train.batch(Project.BATCH_SIZE)
     x_test = x_test.map(load_test_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
     x_test = x_test.batch(Project.BATCH_SIZE)
-    
-    
-    return x_train, y_train, x_test, y_test
+
+    # preprocessing labels
+    #y_train = y_train.map(one_hot_tag, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    #y_test = y_test.map(one_hot_tag, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+
+    #return x_train, y_train, x_test, y_test
+    return x_train, x_test
+
+
 if __name__ == "__main__":
 
     x_train, y_train, x_test, y_test = load_and_preprocessing()
 
     for img in x_train.take(1):
-        plt.imshow(disnormalize(img[0,...]))
+        plt.imshow(disnormalize(img[0, ...]))
         plt.show()
 
     print('done')
