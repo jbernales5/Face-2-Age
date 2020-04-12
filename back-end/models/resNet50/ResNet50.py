@@ -4,16 +4,16 @@ https://github.com/priya-dwivedi/Deep-Learning/blob/master/resnet_keras/Residual
 https://github.com/fchollet/deep-learning-models/blob/master/resnet50.py
 """
 
-import keras.backend as K
+import tensorflow.keras.backend as K
 import scipy.misc
 from IPython.display import SVG
-from keras.applications.imagenet_utils import preprocess_input
-from keras.initializers import glorot_uniform
-from keras.layers import Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, \
+from tensorflow.keras.applications.imagenet_utils import preprocess_input
+from tensorflow.keras.initializers import glorot_uniform
+from tensorflow.keras.layers import Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, \
     AveragePooling2D, MaxPooling2D
-from keras.models import Model
-from keras.preprocessing import image
-from keras.utils import plot_model
+from tensorflow.keras.models import Model
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.utils import plot_model
 from keras.utils.vis_utils import model_to_dot
 from matplotlib.pyplot import imshow
 

@@ -5,7 +5,7 @@ Balancer functions
 import numpy as np
 import glob
 import os
-from Project import Project
+from config import Config
 from logger import logging
 
 
@@ -16,14 +16,14 @@ def root_builder():
     :return:
     """
     files = {'ini_value': 0}
-    project = Project()
-    folder_list = glob.glob(project.DATASET_PATH + '/*')
+    config = Config()
+    folder_list = glob.glob(config.DATASET_PATH + '/*')
     folder_list.sort()
     folder_list = [os.path.split(path)[1] for path in folder_list]
 
     for index, folder in enumerate(folder_list):
         files.update({str(folder): {}})
-        img_list = glob.glob(project.DATASET_PATH + '/' + str(folder) + '/*')
+        img_list = glob.glob(config.DATASET_PATH + '/' + str(folder) + '/*')
         img_list.sort()
         img_list = [os.path.split(img)[1] for img in img_list]
         for img in img_list:
@@ -52,13 +52,13 @@ def balancer_Data():
     """
     Balance number of elements per age, for not bias the model
     """
-    # rules in Project.py
+    # rules in config.py
 
     files = root_builder()
-    project = Project()
+    config = Config()
 
     for folder in files:
-        tag = tag_for_folder(folder, project.RULES_BALANCER)
+        tag = tag_for_folder(folder, config.RULES_BALANCER)
         files = replace_tags(files, folder, tag)
 
     return files

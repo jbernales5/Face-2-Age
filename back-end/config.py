@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 @dataclass
-class Project:
+class Config:
     """
     This class represents our project. It stores useful information about the structure, e.g. paths.
     """

@@ -11,7 +11,7 @@ import glob
 import os
 import sys
 from Balancer import balancer_Data
-from Project import Project
+from config import Config as config
 from logger import logging
 
 
@@ -60,7 +60,7 @@ def random_jitter(img):
     :return:
     """
     img = resize(img, 220, 220)
-    img = tf.image.random_crop(img, [Project.IMG_WIDTH, Project.IMG_HEIGHT, 3])
+    img = tf.image.random_crop(img, [config.IMG_WIDTH, config.IMG_HEIGHT, 3])
 
     if tf.random.uniform(()) > 0.5:
         img = tf.image.random_flip_left_right(img)
@@ -98,7 +98,7 @@ def load_image(filename, augment=True):
     :return:
     """
     img = tf.cast(tf.image.decode_png(tf.io.read_file(filename)), tf.float32)[..., :3]
-    img = resize(img, Project.IMG_HEIGHT, Project.IMG_WIDTH)
+    img = resize(img, config.IMG_HEIGHT, config.IMG_WIDTH)
 
     if augment:
         img = random_jitter(img)
@@ -155,7 +155,7 @@ def replace_age_by_index(age):
     :param age:
     :return:
     """
-    rules = Project.RULES_BALANCER
+    rules = config.RULES_BALANCER
     count = 0
     for range, tag in rules:
         if tag == age:
@@ -171,7 +171,7 @@ def one_hot_tag(tag):
     :param tag:
     :return:
     """
-    return tf.one_hot(tag, Project.NUM_CLASSES)
+    return tf.one_hot(tag, config.NUM_CLASSES)
 
 
 def load_and_preprocessing():
@@ -180,14 +180,14 @@ def load_and_preprocessing():
     :return: x and y, train and test tensorflow dataset
     """
     logging.debug('Loading path from files')
-    imgs_paths_DATASET = glob.glob(Project.DATASET_PATH + '/*/*')
+    imgs_paths_DATASET = glob.glob(config.DATASET_PATH + '/*/*')
     imgs_paths_DATASET.sort()
 
     if not imgs_paths_DATASET:  # check if is empty
         logging.error('--- IMAGES NOT FOUND ---')
 
-    logging.debug('Spligin data ' + str(Project.SPLIT_PERCENTAGE * 100) + ' %')
-    train_img_paths, test_img_paths = split_data(imgs_paths_DATASET, Project.SPLIT_PERCENTAGE)
+    logging.debug('Spligin data ' + str(config.SPLIT_PERCENTAGE * 100) + ' %')
+    train_img_paths, test_img_paths = split_data(imgs_paths_DATASET, config.SPLIT_PERCENTAGE)
 
     logging.debug('Balancing tags')
     files = balancer_Data()  # load a balanced set of tags with the correspond img path
@@ -198,26 +198,19 @@ def load_and_preprocessing():
 
     logging.debug('Making tensorflow dataset')
     # train
-    x_train = tf.data.Dataset.from_tensor_slices((train_img_paths, train_img_Y))
-   # y_train = tf.data.Dataset.from_tensor_slices(train_img_Y)
+    train = tf.data.Dataset.from_tensor_slices((train_img_paths, train_img_Y))
 
     # test
-    x_test = tf.data.Dataset.from_tensor_slices((test_img_paths, test_img_Y))
-    #y_test = tf.data.Dataset.from_tensor_slices(test_img_Y)
+    test = tf.data.Dataset.from_tensor_slices((test_img_paths, test_img_Y))
 
     logging.debug('Preprocessing and Augmentation data..')
     # preprocessing IMG
-    x_train = x_train.map(load_train_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-    x_train = x_train.batch(Project.BATCH_SIZE)
-    x_test = x_test.map(load_test_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-    x_test = x_test.batch(Project.BATCH_SIZE)
+    train = train.map(load_train_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    train = train.batch(config.BATCH_SIZE).prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
+    test = test.map(load_test_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    test = test.batch(config.BATCH_SIZE).prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 
-    # preprocessing labels
-    #y_train = y_train.map(one_hot_tag, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-    #y_test = y_test.map(one_hot_tag, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-
-    #return x_train, y_train, x_test, y_test
-    return x_train, x_test
+    return train, test
 
 
 if __name__ == "__main__":
