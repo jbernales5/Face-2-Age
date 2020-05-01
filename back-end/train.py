@@ -8,15 +8,6 @@ from logger import logging
 from models.resNet50.ResNet50 import ResNet50
 from preprocessing.Preprocessing import load_and_preprocessing
 
-
-def info_data(X_train, Y_train, X_test, Y_test):
-    print("number of training examples = " + str(X_train.shape[0]))
-    print("number of test examples = " + str(X_test.shape[0]))
-    print("X_train shape: " + str(X_train.shape))
-    print("Y_train shape: " + str(Y_train.shape))
-    print("X_test shape: " + str(X_test.shape))
-    print("Y_test shape: " + str(Y_test.shape))
-
 def callbacks():
 
     earlyStopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=0, verbose=0, mode='auto',
@@ -30,7 +21,7 @@ def callbacks():
     csvlogger = CSVLogger('csvlog.csv', separator=',', append=False)
 
 
-    return [earlyStopping, checkpoint, history, csvlogger]
+    return [checkpoint, history, csvlogger]
 
 def train(train, test):
     # load model
@@ -49,6 +40,5 @@ if __name__ == '__main__':
     # load data
     trainSet, testSet = load_and_preprocessing()
 
-    # TODO  info_data(X_train, Y_train, X_test, Y_test)
 
-    train(trainSet, testSet)
+    #train(trainSet, testSet)

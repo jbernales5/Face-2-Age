@@ -6,6 +6,7 @@ https://towardsdatascience.com/building-efficient-data-pipelines-using-tensorflo
 
 import tensorflow as tf
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import glob
 import os
@@ -195,6 +196,9 @@ def load_and_preprocessing():
     # load tags for each image
     train_img_Y = load_label_img(train_img_paths, files)
     test_img_Y = load_label_img(test_img_paths, files)
+
+    #pd.DataFrame(train_img_Y).to_csv("train_img_Y.csv", header=None, index=None)
+    #pd.DataFrame(test_img_Y).to_csv("test_img_Y.csv", header=None, index=None)
 
     logging.debug('Making tensorflow dataset')
     # train
