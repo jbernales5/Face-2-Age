@@ -39,6 +39,4 @@ if __name__ == '__main__':
     logging.info('RUNNING TRAINING')
     # load data
     trainSet, testSet = load_and_preprocessing()
-
-
-    #train(trainSet, testSet)
+    train(trainSet, testSet)
