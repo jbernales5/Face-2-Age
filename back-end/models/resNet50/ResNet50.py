@@ -17,7 +17,7 @@ from tensorflow.keras.utils import plot_model
 from keras.utils.vis_utils import model_to_dot
 from matplotlib.pyplot import imshow
 
-from utils import *
+from resNet50.utils import *
 
 K.set_image_data_format('channels_last')
 K.set_learning_phase(1)
