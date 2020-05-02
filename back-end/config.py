@@ -20,9 +20,10 @@ class Config:
     CHANELS = 3
 
     # PARAMS NEURAL NETWORK
-    BATCH_SIZE = 1
+    BATCH_SIZE = 32
     SPLIT_PERCENTAGE = 0.8
     EPOCHS = 100
+    LEARNING_RATE = 0.0001
 
     # (iniAge, endAge) , TAG
     RULES_BALANCER = [
