@@ -46,11 +46,13 @@ def normalize(img):
     :param img:
     :return:
     """
-    return (img / 127.5) - 1
+    #return (img / 127.5) - 1
+    return (img / 255)
 
 
 def disnormalize(img):
-    return (img + 1) / 2
+    #return (img + 1) / 2
+    return img * 255
 
 
 def random_jitter(img):
@@ -61,7 +63,8 @@ def random_jitter(img):
     :return:
     """
     img = resize(img, 220, 220)
-    img = tf.image.random_crop(img, [config.IMG_WIDTH, config.IMG_HEIGHT, 3])
+
+    img = tf.image.random_crop(img, [config.IMG_WIDTH, config.IMG_HEIGHT, config.CHANELS])
 
     if tf.random.uniform(()) > 0.5:
         img = tf.image.random_flip_left_right(img)
@@ -98,7 +101,11 @@ def load_image(filename, augment=True):
     :param augment:
     :return:
     """
-    img = tf.cast(tf.image.decode_png(tf.io.read_file(filename)), tf.float32)[..., :3]
+    img = tf.image.decode_png(tf.io.read_file(filename))
+    if config.CHANELS == 1:
+        img = tf.image.rgb_to_grayscale(img)
+
+    img = tf.cast(img, tf.float32)[..., : config.CHANELS]
     img = resize(img, config.IMG_HEIGHT, config.IMG_WIDTH)
 
     if augment:
@@ -219,10 +226,13 @@ def load_and_preprocessing():
 
 if __name__ == "__main__":
 
-    x_train, y_train, x_test, y_test = load_and_preprocessing()
+    config.DATASET_PATH = '../DataSet/face_age'
 
-    for img in x_train.take(1):
-        plt.imshow(disnormalize(img[0, ...]))
+    train, test = load_and_preprocessing()
+
+    for img in train.take(1):
+        img = img[0][0, ...]
+        plt.imshow(disnormalize(tf.squeeze(img)))
         plt.show()
 
     print('done')
