@@ -42,11 +42,10 @@ def resize(img, height, width):
 
 def normalize(img):
     """
-    return a img with values from -1 to 1 - Important, matrix must be in float32
+    return a img with values from 0 to 1 - Important, matrix must be in float32
     :param img:
     :return:
     """
-    #return (img / 127.5) - 1
     return (img / 255)
 
 

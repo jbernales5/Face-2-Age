@@ -13,20 +13,20 @@ Implementation Adapted from: github.com/raghakot/keras-resnet
 from __future__ import division
 
 import six
-from tensorflow_core.python.keras.models import Model
-from tensorflow_core.python.keras.layers import Input
-from tensorflow_core.python.keras.layers import Activation
-from tensorflow_core.python.keras.layers import Reshape
-from tensorflow_core.python.keras.layers import Dense
-from tensorflow_core.python.keras.layers import Conv2D
-from tensorflow_core.python.keras.layers import MaxPooling2D
-from tensorflow_core.python.keras.layers import GlobalMaxPooling2D
-from tensorflow_core.python.keras.layers import GlobalAveragePooling2D
-from tensorflow_core.python.keras.layers import Dropout
-from tensorflow_core.python.keras.layers.merge import add
-from tensorflow_core.python.keras.layers.normalization import BatchNormalization
-from tensorflow_core.python.keras.regularizers import l2
-from tensorflow_core.python.keras import backend as K
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import Activation
+from tensorflow.keras.layers import Reshape
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Conv2D
+from tensorflow.keras.layers import MaxPooling2D
+from tensorflow.keras.layers import GlobalMaxPooling2D
+from tensorflow.keras.layers import GlobalAveragePooling2D
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import add
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras import backend as K
 from keras_applications.imagenet_utils import _obtain_input_shape
 
 

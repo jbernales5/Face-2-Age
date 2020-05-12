@@ -1,0 +1,5 @@
+numpy==1.18.2
+opencv-python~=3.4.9.33
+scipy==1.4.1
+Flask~=1.1.2
+autocrop~=1.0.2

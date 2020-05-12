@@ -64,7 +64,7 @@ if __name__ == '__main__':
     logging.info('RUNNING TRAINING')
     # load data
     trainSet, testSet = load_and_preprocessing()
-    #train2(trainSet, testSet)
-    model = loadModel('best_model.hdf5')
-    pred(model, testSet)
+    train2(trainSet, testSet)
+    #model = loadModel('best_model.hdf5')
+    #pred(model, testSet)
     print("fin")
