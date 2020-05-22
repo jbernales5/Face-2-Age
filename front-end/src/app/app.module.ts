@@ -1,11 +1,16 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+import { HttpClientModule } from '@angular/common/http';
+
+import { NgxSpinnerModule, NgxSpinnerService } from "ngx-spinner";
 
 @NgModule({
   declarations: [
@@ -15,9 +20,13 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     BrowserModule,
     AppRoutingModule,
     NgxDropzoneModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    HttpClientModule,
+    NgxSpinnerModule,
+    BrowserAnimationsModule
   ],
-  providers: [],
+  schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+  providers: [ NgxSpinnerService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -15,9 +15,14 @@
           <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
       </ngx-dropzone-preview>
     </ngx-dropzone>
-    <div class="row custom" *ngIf="this.files.length != 0 && this.files.length < 2">
+    <div class="row custom" *ngIf="this.files.length != 0 && this.files.length < 2 && !this.loading">
       <div class="col-md-12">
-        <button type="button" class="btn btn-outline-primary btn-block">Upload</button>
+        <button type="button" (click)="uploadFiles()" class="btn btn-outline-primary btn-block">Upload</button>
+      </div>
+    </div>
+    <div *ngIf="this.loading" class="row custom">
+      <div class="col-md-12">
+        <button type="button" class="btn btn-outline-primary btn-block" disabled>Loading...</button>
       </div>
     </div>
     <div class="row custom" *ngIf="this.files.length > 1">
@@ -40,5 +45,6 @@
     </div>
   
 </div>
+<ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "medium" color = "#fff" type = "ball-grid-pulse" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
 
 <router-outlet></router-outlet>
