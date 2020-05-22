@@ -1,62 +1,70 @@
-import os
-from datetime import time
-
-from IPython import display
-
-from Project import Project
-from logger import logging
-import numpy as np
-import matplotlib.pyplot as plt
 import tensorflow as tf
-from preprocessing.Preprocessing import load_and_preprocessing
+from tensorflow_core.python.keras.callbacks import ModelCheckpoint, History, CSVLogger, EarlyStopping, TensorBoard
+from tensorflow_core.python.keras.optimizer_v2.adam import Adam
+from tensorflow_core.python.keras.models import load_model
+
+from ResNet import ResNet, ResNet18
+from config import Config
+from logger import logging
 from models.resNet50.ResNet50 import ResNet50
+from preprocessing.Preprocessing import load_and_preprocessing
 
+def loadModel(name):
+    model = load_model(name)
+    return model
+def callbacks():
 
-def info_data(X_train, Y_train, X_test, Y_test):
-    print("number of training examples = " + str(X_train.shape[0]))
-    print("number of test examples = " + str(X_test.shape[0]))
-    print("X_train shape: " + str(X_train.shape))
-    print("Y_train shape: " + str(Y_train.shape))
-    print("X_test shape: " + str(X_test.shape))
-    print("Y_test shape: " + str(Y_test.shape))
+    earlyStopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=0, verbose=0, mode='auto',
+                                            baseline=None, restore_best_weights=False)
 
+    checkpoint = ModelCheckpoint('best_model.hdf5', monitor='loss',
+                                 verbose=1,
+                                 save_best_only=True, mode='auto')
+    history = History()
 
-def save_checkpoint(epoch, checkpoint):
-    # saving (checkpoint) the model every 20 epochs
-    if (epoch + 1) % 20 == 0:
-        checkpoint.save(file_prefix=checkpoint_prefix)
+    csvlogger = CSVLogger('csvlog.csv', separator=',', append=False)
 
-    checkpoint.save(file_prefix=checkpoint_prefix)
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir='logs', histogram_freq=1)
 
-def train(X_train, X_test):
+    return [checkpoint, history, csvlogger, tensorboard_callback]
+
+def train(train, test):
     # load model
-    model = ResNet50(input_shape=(project.IMG_HEIGHT, project.IMG_WIDTH, project.CHANELS), classes=project.NUM_CLASSES)
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    lr = config.LEARNING_RATE
+    optimizer = Adam(learning_rate=lr, beta_1=0.9, beta_2=0.999, epsilon=1e-07, amsgrad=False,name='Adam')
+
+    model = ResNet50(input_shape=(config.IMG_HEIGHT, config.IMG_WIDTH, config.CHANELS), classes=config.NUM_CLASSES)
+    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
     model.summary()
 
-    checkpoint_prefix = os.path.join(project.checkpoint_dir, "ckpt")
-    checkpoint = tf.train.Checkpoint()
+    model.fit(train, epochs=config.EPOCHS, validation_data=test, verbose=1, callbacks=callbacks())
+    preds = model.evaluate(test)
 
-    # TODO CALLBACKS, SAVE MODEL, SAVE LOG, EARLYSTOPPING
+def train2(train, test):
+    lr = config.LEARNING_RATE
+    optimizer = Adam(learning_rate=lr, beta_1=0.9, beta_2=0.999, epsilon=1e-07, amsgrad=False, name='Adam')
 
-    model.fit(X_train, steps_per_epoch=4000, epochs=project.EPOCHS, batch_size=project.BATCH_SIZE, validation_data=X_test)
-    # preds = model.evaluate(X_test, Y_test)
+    model = ResNet18(input_shape=(config.IMG_HEIGHT, config.IMG_WIDTH, 1), classes=config.NUM_CLASSES)
+    model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
+    model.summary()
 
+    model.fit(train, epochs=config.EPOCHS, validation_data=test, verbose=1, callbacks=callbacks())
+    preds = model.evaluate(test)
 
+def pred(model, data):
+    data = data.take(1)
+    for img in data:
+        img = img[0]
+        pred = model.predict(data)
+
+    return pred
 if __name__ == '__main__':
-    project = Project()
+    tf.executing_eagerly()
+    config = Config()
     logging.info('RUNNING TRAINING')
     # load data
-    X_train, X_test = load_and_preprocessing()
-
-    X_train = X_train.repeat()
-    X_test = X_test.repeat()
-
-    X_train = X_train.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
-    X_test = X_test.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
-
-    # TODO  info_data(X_train, Y_train, X_test, Y_test)
-
-    train(X_train, X_test)
-
-
+    trainSet, testSet = load_and_preprocessing()
+    train2(trainSet, testSet)
+    #model = loadModel('best_model.hdf5')
+    #pred(model, testSet)
+    print("fin")

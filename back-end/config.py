@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 @dataclass
-class Project:
+class Config:
     """
     This class represents our project. It stores useful information about the structure, e.g. paths.
     """
@@ -17,12 +17,13 @@ class Project:
     NUM_CLASSES = 24
     IMG_HEIGHT = 200
     IMG_WIDTH = 200
-    CHANELS = 3
+    CHANELS = 1
 
     # PARAMS NEURAL NETWORK
-    BATCH_SIZE = 1
+    BATCH_SIZE = 128
     SPLIT_PERCENTAGE = 0.8
     EPOCHS = 100
+    LEARNING_RATE = 0.0001
 
     # (iniAge, endAge) , TAG
     RULES_BALANCER = [

@@ -3,6 +3,10 @@
 #DATASET
 Back-end/DataSet/
 
+#models
+Back-end/models/trained_models/
+Back-end/server/trained_models/
+
 # compiled output
 front-end/dist
 front-end/tmp
