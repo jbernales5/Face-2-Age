@@ -1,0 +1,5 @@
+opencv-python
+Flask
+autocrop
+numpy
+uwsgi
