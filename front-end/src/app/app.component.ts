@@ -15,7 +15,7 @@ export class AppComponent {
 
   constructor(private httpClient: HttpClient, private spinner: NgxSpinnerService) { }
 
-  apiUrl = 'http://35.207.147.71/predict';
+  apiUrl = 'http://<your-server-ip-address>/predict';
 
   // LOCAL TESTING
   // apiUrl = 'http://127.0.0.1/predict';
