@@ -5,6 +5,9 @@ import { Observable, Observer, ReplaySubject } from 'rxjs';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { NgxSpinnerService } from 'ngx-spinner';
 
+import { faHeart, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faAngular, faAws } from '@fortawesome/free-brands-svg-icons';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -12,6 +15,10 @@ import { NgxSpinnerService } from 'ngx-spinner';
 })
 
 export class AppComponent {
+  faHeart = faHeart;
+  faAngular = faAngular;
+  faAWS = faAws;
+  faEnvelope = faEnvelope;
 
   constructor(private httpClient: HttpClient, private spinner: NgxSpinnerService) { }
 
@@ -27,12 +34,10 @@ export class AppComponent {
   loading = false;
 
   onSelect(event) {
-    console.log(event);
     this.files.push(...event.addedFiles);
   }
 
   onRemove(event) {
-    console.log(event);
     this.files.splice(this.files.indexOf(event), 1);
   }
 
@@ -43,7 +48,6 @@ export class AppComponent {
     this.spinner.show();
     this.httpClient.post(this.apiUrl, formData).subscribe(
       (response) => {
-        console.log(response);
         this.loading = false;
         this.spinner.hide();
         const aparentAge = response['real_age'];
@@ -64,7 +68,6 @@ export class AppComponent {
       (error) => {
         this.loading = false;
         this.spinner.hide();
-        console.log(error);
         this.launchSWAL(
           'Error!',
           'Something wrong happened, maybe the server is down!',
