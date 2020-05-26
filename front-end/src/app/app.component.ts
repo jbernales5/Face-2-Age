@@ -15,6 +15,11 @@ export class AppComponent {
 
   constructor(private httpClient: HttpClient, private spinner: NgxSpinnerService) { }
 
+  apiUrl = 'http://35.207.147.71/predict';
+
+  // LOCAL TESTING
+  // apiUrl = 'http://127.0.0.1/predict';
+
   title = 'age-guess';
 
   files: File[] = [];
@@ -36,11 +41,12 @@ export class AppComponent {
     formData.append('image', this.files[0]);
     this.loading = true;
     this.spinner.show();
-    this.httpClient.post('http://34.107.59.141:80/predict', formData).subscribe(
+    this.httpClient.post(this.apiUrl, formData).subscribe(
       (response) => {
+        console.log(response);
         this.loading = false;
         this.spinner.hide();
-        const aparentAge = response['apparent_age'];
+        const aparentAge = response['real_age'];
         const gender = response['gender'];
         this.readImage(this.files[0]).subscribe(result => {
           const tmpResult = String(result);
@@ -50,6 +56,8 @@ export class AppComponent {
             imageUrl: tmpResult,
             imageWidth: 500,
             imageHeight: 400
+          }).then((result) => {
+            this.files.splice(0);
           });
         });
       },

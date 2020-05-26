@@ -2,7 +2,9 @@
 
 Download the "Real age" and "Gender" caffemodel files from this link: https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/
 
-Save the files in /back as dex_imdb_wiki.caffemodel, and gender.caffemodel.
+Save the files in the "back" directory as dex_imdb_wiki.caffemodel, and gender.caffemodel.
+
+Update the back/default.conf file and set the appropriate Access-Control-Allow-Origin header
 
 Run "docker-compose up" and you're good to go!
 
