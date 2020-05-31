@@ -20,7 +20,7 @@ export class AppComponent {
   faAWS = faAws;
   faEnvelope = faEnvelope;
 
-  apiUrl = 'http://<your-server-ip-address>/predict';
+  apiUrl = '<your_server_url>/predict';
 
   // LOCAL TESTING
   // apiUrl = 'http://127.0.0.1/predict';
@@ -34,7 +34,7 @@ export class AppComponent {
   constructor(private httpClient: HttpClient, private spinner: NgxSpinnerService, private elementRef: ElementRef) { }
 
   ngAfterViewInit() {
-    this.elementRef.nativeElement.ownerDocument.body.style.backgroundColor = '#EEEEEE';
+    this.elementRef.nativeElement.ownerDocument.body.style.backgroundColor = '#F2F3F3';
   }
 
   onSelect(event) {

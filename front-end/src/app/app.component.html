@@ -1,6 +1,7 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <div class="container headless center text-center">
-  <img class="img" src="assets/logo.png">
+  <img class="img" src="assets/logo.jpg">
+  <h3>Let Artificial Intelligence guess your age!</h3>
   <div class="dropzone" ngx-dropzone (change)="onSelect($event)" [multiple]="false" [expandable]="true" class="custom">
     <ngx-dropzone-label>Drop your face here, baby!</ngx-dropzone-label>
     <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
