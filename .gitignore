@@ -11,7 +11,7 @@ Back-end/models/trained_models/
 Back-end/server/trained_models/
 
 #logs
-back-end/logs/
+back-end/logs/*
 
 # compiled output
 front-end/dist
