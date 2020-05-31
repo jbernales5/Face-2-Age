@@ -1,7 +1,25 @@
+.dropzone {
+	height: 400px;
+	background: #333 !important;
+	color: #fff;
+	border: 5px dashed rgb(235, 79, 79);
+	border-radius: 5px;
+	font-size: 20px;
+}
+
 .center{
     margin-top: 100px;
     margin-bottom: auto;
 }
 .custom{
     margin-top: 20px;
+}
+
+.headless{
+    margin-top: 0px;
+}
+
+.img{
+    max-width: 50%;
+    height: auto;
 }

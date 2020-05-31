@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 import { faBrain } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Observer, ReplaySubject } from 'rxjs';
@@ -20,7 +20,11 @@ export class AppComponent {
   faAWS = faAws;
   faEnvelope = faEnvelope;
 
-  constructor(private httpClient: HttpClient, private spinner: NgxSpinnerService) { }
+  constructor(private httpClient: HttpClient, private spinner: NgxSpinnerService, private elementRef: ElementRef) { }
+
+  ngAfterViewInit(){
+    this.elementRef.nativeElement.ownerDocument.body.style.backgroundColor = '#EEEEEE';
+  }
 
   apiUrl = 'http://<your-server-ip-address>/predict';
 
