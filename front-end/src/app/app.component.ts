@@ -20,22 +20,22 @@ export class AppComponent {
   faAWS = faAws;
   faEnvelope = faEnvelope;
 
-  constructor(private httpClient: HttpClient, private spinner: NgxSpinnerService, private elementRef: ElementRef) { }
-
-  ngAfterViewInit(){
-    this.elementRef.nativeElement.ownerDocument.body.style.backgroundColor = '#EEEEEE';
-  }
-
   apiUrl = 'http://<your-server-ip-address>/predict';
 
   // LOCAL TESTING
-  //apiUrl = 'http://127.0.0.1/predict';
+  // apiUrl = 'http://127.0.0.1/predict';
 
   title = 'age-guess';
 
   files: File[] = [];
   faBrain = faBrain;
   loading = false;
+
+  constructor(private httpClient: HttpClient, private spinner: NgxSpinnerService, private elementRef: ElementRef) { }
+
+  ngAfterViewInit() {
+    this.elementRef.nativeElement.ownerDocument.body.style.backgroundColor = '#EEEEEE';
+  }
 
   onSelect(event) {
     this.files.push(...event.addedFiles);
@@ -54,7 +54,7 @@ export class AppComponent {
       (response) => {
         this.loading = false;
         this.spinner.hide();
-        const aparentAge = response['real_age'];
+        const aparentAge = response['apparent_age'];
         const gender = response['gender'];
         this.readImage(this.files[0]).subscribe(result => {
           const tmpResult = String(result);
