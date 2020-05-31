@@ -5,46 +5,41 @@ import numpy as np
 import cv2
 from flask import Flask, request, jsonify
 from autocrop import Cropper
+from flask_cors import CORS, cross_origin
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
+CORS(app)
+
 host = '0.0.0.0'
 port = 80
 img_WIDTH = 224
 img_HEIGH = 224
 img_chanels = 3
+NORMALIZATION_PARAM = 1
+DEBUG_MODE = False
 
-model_real_age = None
+
 model_age_apparent = None
 model_gender = None
-
+mean_file = 'trained_models/ilsvrc_2012_mean.npy'
 
 @app.route('/')
 def home_endpoint():
-    return 'Welcome to Flask endpoint! Here you can predict your real age - wich age you look, and your gender!'
-
-def load_model_age_real():
-    global model_real_age
-    prototxtFilePath = '../models/trained_models/real_age/age.prototxt'
-    modelFilePath = '../models/trained_models/real_age/dex_imdb_wiki.caffemodel'
-    model_real_age = cv2.dnn.readNetFromCaffe(prototxtFilePath, modelFilePath)
-
+    return 'Welcome to Flask endpoint! Here you can predict wich age you look, and your gender!'
 
 def load_model_age_apparent():
     global model_age_apparent
-    prototxtFilePath = '../models/trained_models/apparent_age/apparent_age.prototxt'
-    modelFilePath = '../models/trained_models/apparent_age/dex_chalearn_iccv2015.caffemodel'
+    prototxtFilePath = 'trained_models/apparent_age/apparent_age.prototxt'
+    modelFilePath = 'trained_models/apparent_age/dex_chalearn_iccv2015.caffemodel'
     model_age_apparent = cv2.dnn.readNetFromCaffe(prototxtFilePath, modelFilePath)
 
 
 def load_model_gender():
     global model_gender
-    prototxtFilePath = '../models/trained_models/gender/gender.prototxt'
-    modelFilePath = '../models/trained_models/gender/gender.caffemodel'
+    prototxtFilePath = 'trained_models/gender/gender.prototxt'
+    modelFilePath = 'trained_models/gender/gender.caffemodel'
     model_gender = cv2.dnn.readNetFromCaffe(prototxtFilePath, modelFilePath)
-
-
-def normalize(img):
-    return (img /255)
 
 
 def preprocessingIMG(img):
@@ -54,17 +49,14 @@ def preprocessingIMG(img):
     # crop face
     cropper = Cropper(width=img_WIDTH, height=img_HEIGH, face_percent=60)
     cropped_array = cropper.crop(img)
-    # normalize
-    img = normalize(cropped_array)
-    # scale
-    img = cv2.resize(img, (img_WIDTH, img_HEIGH))
-    # reshaping
-    img = img.reshape((img_chanels, img_WIDTH, img_HEIGH))
-    data = np.array(img)[np.newaxis, :] # converts shape from (X,) to (1, X)
-    return data
+
+    # create blob
+    blob = cv2.dnn.blobFromImage(cropped_array, scalefactor=1.0, mean=np.load(mean_file).mean(1).mean(1), swapRB=True)
+
+    return blob
 
 
-def responseBuilder(preds_real_age, preds_age_apparent, preds_gender):
+def responseBuilder(preds_age_apparent, preds_gender):
     """
     build the response to the front end giving the results
     :param preds_real_age:
@@ -72,13 +64,18 @@ def responseBuilder(preds_real_age, preds_age_apparent, preds_gender):
     :param preds_gender:
     :return:
     """
-    real_age = str(np.argmax(preds_real_age))
+    #factorVector = np.arange(0,101,1)
+    #multiplos = factorVector * preds_age_apparent
+    #apparent_age = np.sum(multiplos)
     apparent_age = str(np.argmax(preds_age_apparent))
     gender = 'male' if np.argmax(preds_gender) else 'female'
 
-    res = jsonify(real_age=real_age,
-                  apparent_age=apparent_age,
+    res = jsonify(apparent_age=apparent_age,
                   gender=gender)
+    print("age:{0} - prob age:{1} - gender: {2} - prob gender: {3}".format(apparent_age,
+                    preds_age_apparent[0][np.argmax(preds_age_apparent)],
+                    gender,
+                    preds_gender[0][np.argmax(preds_gender)]))
     return res
 
 
@@ -87,13 +84,9 @@ def get_prediction():
     if request.method == 'POST':
         try:
             filestr = request.files['image'].read()
-            npimg = np.fromstring(filestr, np.uint8)
+            npimg = np.frombuffer(filestr, np.uint8)
             img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
             data = preprocessingIMG(img)
-
-            # get real age prediction
-            model_real_age.setInput(data)
-            preds_real_age = model_real_age.forward()
 
             # get apparent age prediction
             model_age_apparent.setInput(data)
@@ -103,15 +96,15 @@ def get_prediction():
             model_gender.setInput(data)
             preds_gender = model_gender.forward()
 
-        except:
+        except Exception as exc:
+            print(exc)
             return jsonify(-1)
 
-    return responseBuilder(preds_real_age,preds_age_apparent,preds_gender)
+    return responseBuilder(preds_age_apparent,preds_gender)
 
 
 if __name__ == '__main__':
     print("Launching server on {0}:{1}".format(host, port))
-    load_model_age_real()
     load_model_age_apparent()
     load_model_gender()
-    app.run(host=host, port=port)
+    app.run(host=host, port=port, debug=DEBUG_MODE)
