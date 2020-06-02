@@ -8,7 +8,8 @@ services:
   front:
     build: './web'
     ports:
-      - 8080:80
+      - 80:80
+      - 443:443
     networks:
       deploy_net:
         ipv4_address: 172.28.1.2

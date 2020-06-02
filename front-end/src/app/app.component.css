@@ -1,10 +1,5 @@
 .dropzone {
-	height: 400px;
-	background: #333 !important;
-	color: #fff;
-	border: 5px dashed rgb(235, 79, 79);
-	border-radius: 5px;
-	font-size: 20px;
+	background: rgb(243, 247, 247) !important;
 }
 
 .center{

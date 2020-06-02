@@ -25,7 +25,7 @@ export class AppComponent {
   // LOCAL TESTING
   // apiUrl = 'http://127.0.0.1/predict';
 
-  title = 'age-guess';
+  title = 'Face to Age!';
 
   files: File[] = [];
   faBrain = faBrain;
