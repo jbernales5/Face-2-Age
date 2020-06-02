@@ -20,7 +20,7 @@ export class AppComponent {
   faAWS = faAws;
   faEnvelope = faEnvelope;
 
-  apiUrl = '<your_server_url>/predict';
+  apiUrl = '<your_server_ip>/predict';
 
   // LOCAL TESTING
   // apiUrl = 'http://127.0.0.1/predict';
@@ -56,18 +56,27 @@ export class AppComponent {
         this.spinner.hide();
         const aparentAge = response['apparent_age'];
         const gender = response['gender'];
-        this.readImage(this.files[0]).subscribe(result => {
-          const tmpResult = String(result);
-          Swal.fire({
-            title: 'You look ' + aparentAge + '!',
-            text: 'You are a ' + gender + ', and our super AI believes you look like ' + aparentAge,
-            imageUrl: tmpResult,
-            imageWidth: 500,
-            imageHeight: 400
-          }).then((result) => {
-            this.files.splice(0);
+        if (response.hasOwnProperty('apparent_age')) {
+          this.readImage(this.files[0]).subscribe(result => {
+            const tmpResult = String(result);
+            this.launchImageSWAL(
+              'You look ' + aparentAge + '!',
+              'You are a ' + gender + ', and our super AI believes you look like ' + aparentAge,
+              tmpResult).then(() => {
+              this.files.splice(0);
+            });
           });
-        });
+        } else {
+          this.readImage(this.files[0]).subscribe(result => {
+            const tmpResult = String(result);
+            this.launchImageSWAL(
+              'You don\'t look human!',
+              'We could not recognize your face from the provided picture',
+              tmpResult).then(() => {
+              this.files.splice(0);
+            });
+          });
+        }
       },
       (error) => {
         this.loading = false;
@@ -100,6 +109,15 @@ export class AppComponent {
       showCancelButton: false,
       confirmButtonText: confirmButton2,
       cancelButtonText: 'No'
+    });
+  }
+
+  launchImageSWAL(myTitle: string, myText: string, myImageUrl: string) {
+    return Swal.fire({
+      title: myTitle,
+      text: myText,
+      imageUrl: myImageUrl,
+      imageWidth: 500
     });
   }
 
