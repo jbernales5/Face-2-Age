@@ -2,7 +2,11 @@
 <div class='container headless center text-center'>
   <img class='img' src='assets/logo.jpg'>
   <h3>Let Artificial Intelligence guess your age!</h3>
-  <div class='dropzone custom' ngx-dropzone (change)='onSelect($event)' [multiple]='false' [expandable]='true'>
+  <div class='dropzone custom' ngx-dropzone (change)='onSelect($event)'
+    [maxFileSize]="5000000"
+    [multiple]="false"
+    [expandable]="true" 
+    [accept]="'image/*'">
     <ngx-dropzone-label>Drop your face here, baby!</ngx-dropzone-label>
     <ngx-dropzone-preview *ngFor='let f of files' [removable]='true' (removed)='onRemove(f)'>
       <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
@@ -34,7 +38,7 @@
       <footer class='custom'>Made with <fa-icon [icon]='faHeart'></fa-icon> by <u><a
             href='https://www.linkedin.com/in/mcubillo/'> Manuel C</a></u> and <u><a
             href='https://jonathan-bernales.com'> Jonathan B</a></u> | Powered with <fa-icon [icon]='faAngular'>
-        </fa-icon> and <fa-icon [icon]='faAWS'></fa-icon> | v0.39</footer>
+        </fa-icon> and <fa-icon [icon]='faAWS'></fa-icon> | v0.87</footer>
     </div>
     <div class='col-md-4'>
       <footer class='text-right custom'><a href='https://gitlab.com/jbernales/age-guess'>View source code</a></footer>
