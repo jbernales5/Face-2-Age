@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Runtime: python3.8
+    Timeout: 15
+
+Resources:
+  CloudWatchRoleCreation:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "apigateway.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+
+  CloudWatchRolePrivileges:
+    Type: AWS::ApiGateway::Account
+    Properties: 
+      CloudWatchRoleArn: !GetAtt CloudWatchRoleCreation.Arn
+
+  Face2AgeApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Face2AgeAPI
+      StageName: v1
+      EndpointConfiguration:
+        Type: REGIONAL
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          DataTraceEnabled: true
+          LoggingLevel: INFO
+          MetricsEnabled: true
+          ThrottlingRateLimit: 5
+          ThrottlingBurstLimit: 10
+      GatewayResponses:
+        UNAUTHORIZED:
+          StatusCode: "401"
+          ResponseTemplates:
+            application/json: '{"message": $context.error.messageString}'
+          ResponseParameters:
+            Headers:
+              Access-Control-Allow-Origin: "'*'"
+      Cors:
+        AllowMethods: "'POST,GET,PUT'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'https://www.face2age.app'"
+        MaxAge: "'600'"
+      AccessLogSetting:
+        DestinationArn: !GetAtt Face2AgeApiAccessLog.Arn
+        Format: '$context.identity.sourceIp $context.authorizer.claims.sub [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.requestId $context.awsEndpointRequestId $context.xrayTraceId $context.responseLatency $context.integrationLatency "$context.error.message"'
+  
+  Face2AgeApiAccessLog:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 365
+
+  GetReservations:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambdas/getReservations
+      Handler: index.handler
+      Events:
+        GetReservations:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Face2AgeApi
+            Path: /guess
+            Method: get
