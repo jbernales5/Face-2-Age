@@ -1,6 +1,6 @@
 # Face to Age
 
-Hello there! Welcome to the Face2Age repository. Please
+Hello there! Welcome to the Face2Age repository.
 
 # Running your very own Face2Age locally
 ## Requirements
