@@ -1,4 +1,4 @@
-import { Component, ElementRef } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { faBrain } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Observer, ReplaySubject } from 'rxjs';
@@ -14,7 +14,7 @@ import { faAngular, faAws } from '@fortawesome/free-brands-svg-icons';
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit {
   faHeart = faHeart;
   faAngular = faAngular;
   faAWS = faAws;
@@ -32,6 +32,15 @@ export class AppComponent {
   loading = false;
 
   constructor(private httpClient: HttpClient, private spinner: NgxSpinnerService, private elementRef: ElementRef) { }
+
+  ngOnInit() {
+    this.launchSWAL(
+      'Warning',
+      'We are currently reworking the back-end of this project, so it might be very likely that your queries do not work!',
+      'warning',
+      'Ok :('
+    );
+  }
 
   ngAfterViewInit() {
     this.elementRef.nativeElement.ownerDocument.body.style.backgroundColor = '#F2F3F3';
